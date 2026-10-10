@@ -1,0 +1,75 @@
+# One-command deployment: `docker compose up -d --build`
+# nginx (TLS/LB) -> 2+ stateless NestJS replicas (serving the React app) -> PostgreSQL + Redis
+# Scale the app tier with: docker compose up -d --scale app=4
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mc2026
+      POSTGRES_USER: mc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    command: ["postgres", "-c", "max_connections=200", "-c", "shared_buffers=256MB"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mc -d mc2026"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    image: mc2026-voting:local
+    build: .
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://mc:${POSTGRES_PASSWORD}@db:5432/mc2026
+      REDIS_URL: redis://redis:6379
+      TRUST_PROXY: "1"           # exactly one proxy hop (nginx) in front
+      PORT: "3000"
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      seed: { condition: service_completed_successfully }
+
+  seed:
+    image: mc2026-voting:local
+    build: .
+    restart: "no"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://mc:${POSTGRES_PASSWORD}@db:5432/mc2026
+      REDIS_URL: redis://redis:6379
+      TRUST_PROXY: "1"
+      PORT: "3000"
+    command: ["node", "dist/cli/seed.js"]
+    depends_on:
+      db: { condition: service_healthy }
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      # LAN mode binds to 127.0.0.1 so phones must go through scripts/lan-gateway.mjs
+      - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/${REAL_IP_CONF:-real-ip.none.conf}:/etc/nginx/conf.d/00-real-ip.conf:ro
+    depends_on:
+      app: { condition: service_healthy }
+
+volumes:
+  pgdata:

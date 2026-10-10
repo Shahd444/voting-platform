@@ -1,0 +1,96 @@
+/* Public language control stays available on login, ballots, and display lock/error screens. */
+.public-language {
+  position: fixed;
+  inset-block-start: max(14px, env(safe-area-inset-top));
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  z-index: 100;
+  min-height: 44px;
+  min-width: 88px;
+  padding: 8px 16px;
+  border: 1px solid #cbc5e8;
+  border-radius: 999px;
+  background: #fff;
+  color: #07177e;
+  box-shadow: 0 3px 12px rgb(7 23 126 / .12);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.public-language:focus-visible { outline: 3px solid #7f32d9; outline-offset: 3px; }
+body.vote .public-language {
+  inset-inline-start: auto;
+  inset-inline-end: auto;
+  left: auto;
+  right: max(16px, env(safe-area-inset-right));
+}
+html body.vote .topbar { padding-left: 16px; padding-right: 128px; }
+html[dir="rtl"] body.vote .topbar { flex-direction: row-reverse; }
+html body.tv .hdr { padding-top: 58px; }
+body.vote.vote-login .maker-brand { left: 8px; right: auto; transform: none; max-width: calc(100vw - 148px); }
+body.vote.vote-login .maker-brand img { max-width: 100%; }
+html[dir="rtl"] body.vote.vote-login .maker-brand { left: 8px !important; right: auto !important; transform: none !important; }
+html[dir="rtl"] body.vote .login-card h1 { letter-spacing: 0; line-height: 1.4; }
+html[dir="rtl"] body.vote .login-design-field input:not([dir="ltr"]) { text-align: right; }
+html[dir="rtl"] body.vote .login-design-submit svg { transform: scaleX(-1); }
+html[dir="rtl"] body.tv .hdr-status,
+html[dir="rtl"] body.tv .stat,
+html[dir="rtl"] body.tv .n { text-align: start; }
+html[dir="rtl"] body.tv .hdr-title h1,
+html[dir="rtl"] body.tv .cta-copy b { letter-spacing: 0; line-height: 1.35; }
+html[dir="rtl"] body.tv .cta-copy span { letter-spacing: 0; }
+html[dir="rtl"] body.tv .ftr { margin-left: 0; margin-right: calc(50% - 50vw); }
+html[dir="rtl"] body.tv .note { padding-left: 0; padding-right: 2rem; }
+/* The Maker Collective shared design tokens */
+:root {
+  --purple: #7f32d9;
+  --yellow: #f8d749;
+  --royal: #4a68d8;
+  --turquoise: #74dccf;
+  --navy: #00007b;
+  --burgundy: #a52a3a;
+  --ink: #00007b;
+  --ink-2: #2e337f;
+  --ink-3: #6670a8;
+  --paper: #f7f8ff;
+  --paper-2: #edf0ff;
+  --card: #ffffff;
+  --line: rgba(0, 0, 123, .12);
+  --line-2: rgba(0, 0, 123, .24);
+  --ok: #1aa99d;
+  --err: #a52a3a;
+  --orange: var(--burgundy);
+  --orange-ink: var(--burgundy);
+  --mint: var(--turquoise);
+  --violet: var(--purple);
+  --sun: var(--yellow);
+  --rose: var(--burgundy);
+  /* category accent cycle */
+  --c1: var(--purple);
+  --c2: var(--yellow);
+  --c3: var(--royal);
+  --c4: var(--turquoise);
+  --c5: var(--burgundy);
+  --radius: 8px;
+  --radius-sm: 8px;
+  --shadow: 0 18px 48px -32px rgba(0,0,123,.48), 0 1px 0 rgba(0,0,123,.08);
+  --font-display: 'Montserrat', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Montserrat', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+[dir="rtl"] {
+  --font-display: 'IBM Plex Sans Arabic', 'Montserrat', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Montserrat', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font-body); color: var(--ink); background: var(--paper); line-height: 1.5; }
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--turquoise); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--line-2); border-top-color: var(--purple); animation: spin .8s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.boot-spinner { display: grid; place-items: center; min-height: 60vh; }

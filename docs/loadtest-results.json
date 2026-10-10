@@ -1,0 +1,77 @@
+{
+  "visitors": 1000,
+  "concurrency": 250,
+  "replicas": 2,
+  "phase1_page_open_storm": {
+    "simultaneous_requests": 1000,
+    "ok": 1000,
+    "seconds": 0.87,
+    "latency_ms": {
+      "p50": 556.1,
+      "p95": 765.5,
+      "p99": 782.3
+    }
+  },
+  "phase2_full_voting_flow": {
+    "completed_visitors": 1000,
+    "failed_visitors": 0,
+    "votes_cast": 3000,
+    "seconds": 7.55,
+    "requests": 5000,
+    "throughput_req_per_sec": 663,
+    "votes_per_sec": 398,
+    "latency_ms": {
+      "otp_request": {
+        "p50": 411.7,
+        "p95": 594.7,
+        "p99": 675.8
+      },
+      "otp_verify": {
+        "p50": 329.9,
+        "p95": 649.5,
+        "p99": 674.4
+      },
+      "vote": {
+        "p50": 358.4,
+        "p95": 523.3,
+        "p99": 556.2
+      }
+    },
+    "errors": {}
+  },
+  "phase3_correctness": {
+    "db_new_votes": 3000,
+    "successful_vote_responses": 3000,
+    "match": true,
+    "live_screens": [
+      {
+        "replica": "http://localhost:3000",
+        "connected": true,
+        "events_received": 16,
+        "final_total_seen": 3301,
+        "up_to_date": true
+      },
+      {
+        "replica": "http://localhost:3000",
+        "connected": true,
+        "events_received": 16,
+        "final_total_seen": 3301,
+        "up_to_date": true
+      },
+      {
+        "replica": "http://localhost:3001",
+        "connected": true,
+        "events_received": 16,
+        "final_total_seen": 3301,
+        "up_to_date": true
+      },
+      {
+        "replica": "http://localhost:3001",
+        "connected": true,
+        "events_received": 16,
+        "final_total_seen": 3301,
+        "up_to_date": true
+      }
+    ]
+  }
+}
